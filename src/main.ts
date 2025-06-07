@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as compression from 'compression';
-import * as helmet from 'helmet';
+import helmet from 'helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
@@ -19,7 +19,7 @@ async function bootstrap() {
           winston.format.colorize(),
           winston.format.printf((info) => {
             const { timestamp, level, message, ...args } = info;
-            return `${timestamp} [${level}]: ${message} ${
+            return `${String(timestamp)} [${level}]: ${String(message)} ${
               Object.keys(args).length ? JSON.stringify(args, null, 2) : ''
             }`;
           }),
@@ -80,4 +80,4 @@ async function bootstrap() {
   logger.log(`Application is running on: ${await app.getUrl()}`);
 }
 
-bootstrap();
+void bootstrap();

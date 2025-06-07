@@ -3,6 +3,13 @@ import { Job } from 'bull';
 import { LoggerService } from '../../utils/logger.service';
 import { ScrapingStrategyFactory } from '../../scrapers/strategies/scraping-strategy.factory';
 import { MetricsService } from '../../monitoring/metrics/metrics.service';
+import { AccountData } from '../../scrapers/strategies/scraping-strategy.interface';
+
+interface ScrapingJobData {
+  userId: string;
+  bankCode: string;
+  credentials: Record<string, unknown>;
+}
 
 @Processor('scraping')
 export class ScrapingProcessor {
@@ -13,7 +20,7 @@ export class ScrapingProcessor {
   ) {}
 
   @Process('updateAccount')
-  async handleAccountUpdate(job: Job<{ userId: string; bankCode: string; credentials: any }>) {
+  async handleAccountUpdate(job: Job<ScrapingJobData>): Promise<AccountData> {
     const { userId, bankCode, credentials } = job.data;
     const startTime = Date.now();
     
@@ -24,7 +31,7 @@ export class ScrapingProcessor {
       const strategy = this.scrapingStrategyFactory.getStrategy(bankCode);
       
       // 스크래핑 실행
-      const result = await strategy.execute(credentials);
+      const result = await strategy.execute(credentials) as AccountData;
       
       // 작업 완료 시간 측정 및 메트릭 기록
       const duration = Date.now() - startTime;
@@ -38,17 +45,20 @@ export class ScrapingProcessor {
       // 실패 메트릭 기록
       this.metricsService.incrementFailedScraping(bankCode);
       
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
       this.logger.error(
-        `Failed to update account for user ${userId} and bank ${bankCode}: ${error.message}`,
-        error.stack,
+        `Failed to update account for user ${userId} and bank ${bankCode}: ${errorMessage}`,
+        errorStack,
         'ScrapingProcessor',
       );
       
       // 작업 재시도 여부 결정
       const attempts = job.attemptsMade;
-      if (attempts < job.opts.attempts - 1) {
+      const maxAttempts = job.opts.attempts ?? 3;
+      if (attempts < maxAttempts - 1) {
         this.logger.warn(
-          `Retrying job for user ${userId} (attempt ${attempts + 1}/${job.opts.attempts})`,
+          `Retrying job for user ${userId} (attempt ${attempts + 1}/${maxAttempts})`,
           'ScrapingProcessor',
         );
       }

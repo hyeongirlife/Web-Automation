@@ -19,6 +19,28 @@ export interface HealthData {
   };
 }
 
+interface ServiceStatus {
+  status: 'up' | 'down' | 'degraded';
+  responseTime: number;
+  lastChecked: Date;
+}
+
+interface MetricsData {
+  scraping: {
+    successRates: Record<string, number>;
+    averageDurations: Record<string, number>;
+    totalSuccess: number;
+    totalFailure: number;
+  };
+  proxy: {
+    usage: Record<string, number>;
+    failures: Record<string, number>;
+  };
+  rateLimit: {
+    hits: Record<string, number>;
+  };
+}
+
 @Injectable()
 export class HealthService {
   private healthData: HealthData = {
@@ -39,59 +61,63 @@ export class HealthService {
   @Cron(CronExpression.EVERY_MINUTE)
   async checkSystemHealth(): Promise<void> {
     this.logger.log('Running system health check');
-    
+
     try {
       // 메트릭 데이터 가져오기
-      const metrics = this.metricsService.getAllMetrics();
-      
+      const metrics = this.metricsService.getAllMetrics() as MetricsData;
+
       // 총 요청 수 계산
-      const totalRequests = metrics.scraping.totalSuccess + metrics.scraping.totalFailure;
-      
+      const totalRequests =
+        metrics.scraping.totalSuccess + metrics.scraping.totalFailure;
+
       // 에러율 계산
-      const errorRate = totalRequests > 0 ? metrics.scraping.totalFailure / totalRequests : 0;
-      
+      const errorRate =
+        totalRequests > 0 ? metrics.scraping.totalFailure / totalRequests : 0;
+
       // 평균 응답 시간 계산
       let totalDuration = 0;
       let durationCount = 0;
-      
-      Object.values(metrics.scraping.averageDurations).forEach((duration: number) => {
+
+      Object.values(metrics.scraping.averageDurations).forEach((duration) => {
         if (duration > 0) {
           totalDuration += duration;
           durationCount++;
         }
       });
-      
-      const averageResponseTime = durationCount > 0 ? totalDuration / durationCount : 0;
-      
+
+      const averageResponseTime =
+        durationCount > 0 ? totalDuration / durationCount : 0;
+
       // 서비스 상태 업데이트
-      const services = {};
+      const services: Record<string, ServiceStatus> = {};
+
       for (const bankCode of Object.keys(metrics.scraping.successRates)) {
         const successRate = metrics.scraping.successRates[bankCode];
         const responseTime = metrics.scraping.averageDurations[bankCode] || 0;
-        
+
         let status: 'up' | 'down' | 'degraded' = 'up';
         if (successRate < 50) {
           status = 'down';
         } else if (successRate < 90) {
           status = 'degraded';
         }
-        
+
         services[bankCode] = {
           status,
           responseTime,
           lastChecked: new Date(),
         };
       }
-      
+
       // 전체 시스템 상태 결정
       let systemStatus: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
-      
+
       if (errorRate > 0.2) {
         systemStatus = 'unhealthy';
       } else if (errorRate > 0.05) {
         systemStatus = 'degraded';
       }
-      
+
       // 헬스 데이터 업데이트
       this.healthData = {
         status: systemStatus,
@@ -101,7 +127,7 @@ export class HealthService {
         lastChecked: new Date(),
         services,
       };
-      
+
       // 알람 발생 여부 확인
       if (systemStatus === 'unhealthy') {
         await this.alertsService.sendAlert('System is unhealthy', {
@@ -116,17 +142,22 @@ export class HealthService {
           details: 'System performance is degraded',
         });
       }
-      
-      this.logger.log(`Health check completed: System status is ${systemStatus}`);
+
+      this.logger.log(
+        `Health check completed: System status is ${systemStatus}`,
+      );
     } catch (error) {
-      this.logger.error(`Health check failed: ${error.message}`, error.stack);
-      
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Health check failed: ${errorMessage}`, errorStack);
+
       // 에러 발생 시 시스템 상태를 unhealthy로 설정
       this.healthData.status = 'unhealthy';
       this.healthData.lastChecked = new Date();
-      
+
       await this.alertsService.sendAlert('Health check failed', {
-        error: error.message,
+        error: errorMessage,
         details: 'Failed to complete system health check',
       });
     }

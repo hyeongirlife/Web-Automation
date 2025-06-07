@@ -62,7 +62,7 @@ export class MetricsService {
     const success = this.metrics.scraping.success.get(bankCode) || 0;
     const failure = this.metrics.scraping.failure.get(bankCode) || 0;
     const total = success + failure;
-    
+
     if (total === 0) return 0;
     return (success / total) * 100;
   }
@@ -70,9 +70,9 @@ export class MetricsService {
   // 은행별 평균 스크래핑 시간 계산
   getAverageScrapingDuration(bankCode: string): number {
     const durations = this.metrics.scraping.duration.get(bankCode) || [];
-    
+
     if (durations.length === 0) return 0;
-    
+
     const sum = durations.reduce((acc, duration) => acc + duration, 0);
     return sum / durations.length;
   }
@@ -98,13 +98,16 @@ export class MetricsService {
     // 스크래핑 성공률 및 평균 시간 계산
     for (const bankCode of this.metrics.scraping.success.keys()) {
       result.scraping.successRates[bankCode] = this.getSuccessRate(bankCode);
-      result.scraping.averageDurations[bankCode] = this.getAverageScrapingDuration(bankCode);
-      result.scraping.totalSuccess += this.metrics.scraping.success.get(bankCode) || 0;
+      result.scraping.averageDurations[bankCode] =
+        this.getAverageScrapingDuration(bankCode);
+      result.scraping.totalSuccess +=
+        this.metrics.scraping.success.get(bankCode) || 0;
     }
 
     // 스크래핑 실패 총합 계산
     for (const bankCode of this.metrics.scraping.failure.keys()) {
-      result.scraping.totalFailure += this.metrics.scraping.failure.get(bankCode) || 0;
+      result.scraping.totalFailure +=
+        this.metrics.scraping.failure.get(bankCode) || 0;
     }
 
     // 프록시 사용 및 실패 데이터
@@ -140,7 +143,7 @@ export class MetricsService {
         hits: new Map<string, number>(),
       },
     };
-    
+
     this.logger.log('All metrics have been reset');
   }
 }

@@ -35,7 +35,8 @@ export class BrowserFactory implements OnModuleInit, OnModuleDestroy {
       });
       this.logger.log('Browser initialized successfully');
     } catch (error) {
-      this.logger.error('Failed to initialize browser', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to initialize browser', errorMessage);
       throw error;
     }
   }
@@ -44,7 +45,7 @@ export class BrowserFactory implements OnModuleInit, OnModuleDestroy {
     if (!this.browser) {
       await this.initBrowser();
     }
-    return this.browser;
+    return this.browser as Browser;
   }
 
   async closeBrowser(): Promise<void> {

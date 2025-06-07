@@ -41,8 +41,10 @@ export class BankScraperService {
       this.logger.log('Login successful');
       return page;
     } catch (error) {
-      this.logger.error(`Login failed: ${error.message}`, error.stack);
-      throw new Error(`Failed to login to bank: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Login failed: ${errorMessage}`, errorStack);
+      throw new Error(`Failed to login to bank: ${errorMessage}`);
     }
   }
 
@@ -57,19 +59,21 @@ export class BankScraperService {
       const balanceText = await page.$eval('#account-balance', (el) => el.textContent);
       
       // 숫자만 추출 (쉼표, 통화 기호 등 제거)
-      const balance = parseFloat(balanceText.replace(/[^0-9.-]+/g, ''));
+      const balance = parseFloat(balanceText?.replace(/[^0-9.-]+/g, '') || '0');
       
       this.logger.log(`Balance fetched: ${balance}`);
       return balance;
     } catch (error) {
-      this.logger.error(`Failed to get balance: ${error.message}`, error.stack);
-      throw new Error(`Failed to get account balance: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Failed to get balance: ${errorMessage}`, errorStack);
+      throw new Error(`Failed to get account balance: ${errorMessage}`);
     }
   }
 
   async getTransactionHistory(page: Page, startDate: Date, endDate: Date): Promise<any[]> {
     try {
-      this.logger.log(`Fetching transaction history from ${startDate} to ${endDate}`);
+      this.logger.log(`Fetching transaction history from ${startDate.toISOString()} to ${endDate.toISOString()}`);
       
       // 거래내역 페이지로 이동 (예시)
       await page.click('#transaction-history-tab');
@@ -98,8 +102,10 @@ export class BankScraperService {
       this.logger.log(`Fetched ${transactions.length} transactions`);
       return transactions;
     } catch (error) {
-      this.logger.error(`Failed to get transaction history: ${error.message}`, error.stack);
-      throw new Error(`Failed to get transaction history: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Failed to get transaction history: ${errorMessage}`, errorStack);
+      throw new Error(`Failed to get transaction history: ${errorMessage}`);
     }
   }
 
@@ -116,10 +122,12 @@ export class BankScraperService {
       await page.close();
       this.logger.log('Logout successful');
     } catch (error) {
-      this.logger.error(`Logout failed: ${error.message}`, error.stack);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Logout failed: ${errorMessage}`, errorStack);
       // 페이지는 항상 닫아야 함
       await page.close().catch(() => {});
-      throw new Error(`Failed to logout: ${error.message}`);
+      throw new Error(`Failed to logout: ${errorMessage}`);
     }
   }
 }
