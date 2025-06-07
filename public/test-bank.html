@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Bank</title>
+</head>
+<body>
+  <form id="login-form">
+    <input id="username" name="username" placeholder="Username" />
+    <input id="password" name="password" type="password" placeholder="Password" />
+    <button id="login-btn" type="submit">Login</button>
+  </form>
+  <div id="account-section" style="display:none;">
+    <div id="account-balance">₩1,234,567</div>
+    <button id="transaction-history-tab">Transaction History</button>
+    <form id="date-range-form" style="display:none;">
+      <input id="start-date" type="date" />
+      <input id="end-date" type="date" />
+      <button id="search-transactions-btn" type="button">Search</button>
+    </form>
+    <div id="transactions"></div>
+    <button id="logout-btn">Logout</button>
+  </div>
+  <script>
+    // 로그인 시뮬레이션
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('account-section').style.display = 'block';
+    });
+
+    // 거래내역 탭 클릭 시 폼 표시
+    document.getElementById('transaction-history-tab').addEventListener('click', function() {
+      document.getElementById('date-range-form').style.display = 'block';
+    });
+
+    // 거래내역 조회 시 샘플 데이터 표시
+    document.getElementById('search-transactions-btn').addEventListener('click', function() {
+      document.getElementById('transactions').innerHTML = `
+        <div class="transaction-item">
+          <span class="date">2020-03-15</span>
+          <span class="description">Deposit</span>
+          <span class="amount">+500,000</span>
+          <span class="balance">500,000</span>
+        </div>
+        <div class="transaction-item">
+          <span class="date">2021-07-22</span>
+          <span class="description">Withdrawal</span>
+          <span class="amount">-120,000</span>
+          <span class="balance">380,000</span>
+        </div>
+        <div class="transaction-item">
+          <span class="date">2022-01-10</span>
+          <span class="description">Deposit</span>
+          <span class="amount">+300,000</span>
+          <span class="balance">680,000</span>
+        </div>
+        <div class="transaction-item">
+          <span class="date">2022-12-05</span>
+          <span class="description">Withdrawal</span>
+          <span class="amount">-50,000</span>
+          <span class="balance">630,000</span>
+        </div>
+        <div class="transaction-item">
+          <span class="date">2023-02-18</span>
+          <span class="description">Deposit</span>
+          <span class="amount">+200,000</span>
+          <span class="balance">830,000</span>
+        </div>
+        <div class="transaction-item">
+          <span class="date">2023-08-30</span>
+          <span class="description">Withdrawal</span>
+          <span class="amount">-80,000</span>
+          <span class="balance">750,000</span>
+        </div>
+        <div class="transaction-item">
+          <span class="date">2024-01-12</span>
+          <span class="description">Deposit</span>
+          <span class="amount">+150,000</span>
+          <span class="balance">900,000</span>
+        </div>
+        <div class="transaction-item">
+          <span class="date">2024-03-05</span>
+          <span class="description">Withdrawal</span>
+          <span class="amount">-30,000</span>
+          <span class="balance">870,000</span>
+        </div>
+        <div class="transaction-item">
+          <span class="date">2024-05-20</span>
+          <span class="description">Deposit</span>
+          <span class="amount">+100,000</span>
+          <span class="balance">970,000</span>
+        </div>
+        <div class="transaction-item">
+          <span class="date">2024-06-02</span>
+          <span class="description">Withdrawal</span>
+          <span class="amount">-50,000</span>
+          <span class="balance">920,000</span>
+        </div>
+      `;
+    });
+
+    // 로그아웃
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      document.getElementById('account-section').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+    });
+  </script>
+</body>
+</html>

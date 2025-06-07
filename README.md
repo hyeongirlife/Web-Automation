@@ -226,3 +226,51 @@ MIT License
   `<a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" />``</a>`
 
 </p>
+
+## 트러블슈팅 (E2E 테스트 및 Puppeteer)
+
+### 1. file:// 환경에서 navigation 대기 문제
+
+- `page.goto(url, { waitUntil: 'networkidle2' })` 또는 `page.waitForNavigation({ waitUntil: 'networkidle2' })`는 file 프로토콜에서는 무한 대기/타임아웃이 발생할 수 있다.
+- file 환경에서는 반드시 `waitUntil: 'load'`로 변경하거나, navigation 대신 DOM 요소가 등장할 때까지 `page.waitForSelector`로 대기했다.
+
+### 2. SPA/정적 HTML에서 네트워크 응답 대기 문제
+
+- 테스트용 HTML은 네트워크 요청 없이 DOM만 변경한다.
+- `page.waitForResponse`로 네트워크 응답을 기다리면 영원히 대기하게 된다.
+- 버튼 클릭 후, 원하는 데이터가 DOM에 렌더링될 때까지 `page.waitForSelector`로 대기했다.
+
+### 3. Puppeteer의 file:// 접근 권한 문제
+
+- 일부 환경에서는 Puppeteer가 file:// 경로를 제대로 읽지 못할 수 있다.
+- Puppeteer 실행 시 아래 옵션을 추가했다:
+  ```js
+  args: [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--allow-file-access-from-files',
+  ]
+  ```
+
+### 4. 테스트 타임아웃 문제
+
+- Puppeteer 기반 테스트는 환경에 따라 시간이 오래 걸릴 수 있다.
+- Jest 테스트의 타임아웃을 충분히 늘렸다. (예: `30000`ms)
+
+### 5. 경로 별칭(import alias) 문제
+
+- Jest는 TypeScript의 `src/` 경로 별칭을 기본적으로 인식하지 못한다.
+- 루트에 `jest.config.js`를 만들고 아래와 같이 설정했다:
+  ```js
+  module.exports = {
+    // ...
+    moduleNameMapper: {
+      '^src/(.*)$': '<rootDir>/src/$1',
+    },
+  };
+  ```
+
+### 6. 디버깅 팁
+
+- 각 단계별로 `console.log`를 추가해 어디서 멈추는지 확인했다.
+- 에러 발생 시 `page.screenshot({ path: '에러시점.png' })`로 실제 화면을 저장해 원인을 파악했다.
