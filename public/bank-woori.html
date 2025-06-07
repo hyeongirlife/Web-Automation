@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>우리은행 테스트</title>
+  <style>
+    .woori-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .woori-table th, .woori-table td { border: 1px solid #e0e0e0; padding: 6px 8px; text-align: center; }
+    .woori-table th { background: #f6f6f6; color: #222; }
+    .woori-table tr:nth-child(even) { background: #f7fafd; }
+    .woori-table tr:hover { background: #e3f2fd; }
+  </style>
+</head>
+<body>
+  <form id="woori-login">
+    <input id="woori-user" placeholder="ID" />
+    <input id="woori-pass" type="password" placeholder="PW" />
+    <button id="woori-login-btn" type="submit">로그인</button>
+  </form>
+  <div id="woori-main" style="display:none;">
+    <div id="woori-balance">₩4,000,000</div>
+    <button id="woori-history">내역</button>
+    <form id="woori-date" style="display:none;">
+      <input id="woori-from" type="date" />
+      <input id="woori-to" type="date" />
+      <button id="woori-search" type="button">조회</button>
+    </form>
+    <div id="woori-list"></div>
+    <button id="woori-logout">로그아웃</button>
+  </div>
+  <script>
+    document.getElementById('woori-login').addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.getElementById('woori-login').style.display = 'none';
+      document.getElementById('woori-main').style.display = 'block';
+    });
+    document.getElementById('woori-history').addEventListener('click', function() {
+      document.getElementById('woori-date').style.display = 'block';
+    });
+    function generateWooriTransactions() {
+      const start = new Date('2020-01-01');
+      const today = new Date();
+      const days = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+      const count = 1000;
+      const step = Math.max(1, Math.floor(days / count));
+      let html = `
+        <table class="woori-table">
+          <thead>
+            <tr>
+              <th>거래일</th>
+              <th>적요</th>
+              <th>입출금</th>
+              <th>잔액</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      let balance = 4000000;
+      for (let i = 0; i < count; i++) {
+        const date = new Date(start.getTime() + i * step * 24 * 60 * 60 * 1000);
+        const isDeposit = Math.random() > 0.5;
+        const amount = Math.floor(Math.random() * 100000) + 10000;
+        balance += isDeposit ? amount : -amount;
+        html += `
+          <tr class="woori-item">
+            <td class="woori-date">${date.toISOString().split('T')[0]}</td>
+            <td class="woori-desc">${isDeposit ? '입금' : '출금'}</td>
+            <td class="woori-amt">${isDeposit ? '+' : '-'}${amount.toLocaleString()}</td>
+            <td class="woori-bal">${balance.toLocaleString()}</td>
+          </tr>
+        `;
+      }
+      html += '</tbody></table>';
+      return html;
+    }
+    document.getElementById('woori-search').addEventListener('click', function() {
+      document.getElementById('woori-list').innerHTML = generateWooriTransactions();
+    });
+    document.getElementById('woori-logout').addEventListener('click', function() {
+      document.getElementById('woori-main').style.display = 'none';
+      document.getElementById('woori-login').style.display = 'block';
+    });
+  </script>
+</body>
+</html> 

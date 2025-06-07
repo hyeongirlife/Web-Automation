@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>하나은행 테스트</title>
+  <style>
+    .hana-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .hana-table th, .hana-table td { border: 1px solid #e0e0e0; padding: 6px 8px; text-align: center; }
+    .hana-table th { background: #e6f2e6; color: #222; }
+    .hana-table tr:nth-child(even) { background: #f7faf7; }
+    .hana-table tr:hover { background: #e0f7fa; }
+  </style>
+</head>
+<body>
+  <form id="hana-login">
+    <input id="hana-user" placeholder="ID" />
+    <input id="hana-pass" type="password" placeholder="PW" />
+    <button id="hana-login-btn" type="submit">Login</button>
+  </form>
+  <section id="hana-main" style="display:none;">
+    <div id="hana-balance">₩3,210,000</div>
+    <button id="hana-history">History</button>
+    <form id="hana-date" style="display:none;">
+      <input id="hana-from" type="date" />
+      <input id="hana-to" type="date" />
+      <button id="hana-search" type="button">Search</button>
+    </form>
+    <div id="hana-list"></div>
+    <button id="hana-logout">Logout</button>
+  </section>
+  <script>
+    document.getElementById('hana-login').addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.getElementById('hana-login').style.display = 'none';
+      document.getElementById('hana-main').style.display = 'block';
+    });
+    document.getElementById('hana-history').addEventListener('click', function() {
+      document.getElementById('hana-date').style.display = 'block';
+    });
+    function generateHanaTransactions() {
+      const start = new Date('2020-01-01');
+      const today = new Date();
+      const days = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+      const count = 1000;
+      const step = Math.max(1, Math.floor(days / count));
+      let html = `
+        <table class="hana-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      let balance = 3210000;
+      for (let i = 0; i < count; i++) {
+        const date = new Date(start.getTime() + i * step * 24 * 60 * 60 * 1000);
+        const isDeposit = Math.random() > 0.5;
+        const amount = Math.floor(Math.random() * 100000) + 10000;
+        balance += isDeposit ? amount : -amount;
+        html += `
+          <tr class="hana-item">
+            <td class="hana-date">${date.toISOString().split('T')[0]}</td>
+            <td class="hana-desc">${isDeposit ? 'Salary' : 'Withdraw'}</td>
+            <td class="hana-amt">${isDeposit ? '+' : '-'}${amount.toLocaleString()}</td>
+            <td class="hana-bal">${balance.toLocaleString()}</td>
+          </tr>
+        `;
+      }
+      html += '</tbody></table>';
+      return html;
+    }
+    document.getElementById('hana-search').addEventListener('click', function() {
+      document.getElementById('hana-list').innerHTML = generateHanaTransactions();
+    });
+    document.getElementById('hana-logout').addEventListener('click', function() {
+      document.getElementById('hana-main').style.display = 'none';
+      document.getElementById('hana-login').style.display = 'block';
+    });
+  </script>
+</body>
+</html> 

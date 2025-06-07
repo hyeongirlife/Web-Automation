@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>기업은행 테스트</title>
+  <style>
+    .ibk-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .ibk-table th, .ibk-table td { border: 1px solid #e0e0e0; padding: 6px 8px; text-align: center; }
+    .ibk-table th { background: #f0f6ff; color: #222; }
+    .ibk-table tr:nth-child(even) { background: #f7fafd; }
+    .ibk-table tr:hover { background: #e3f2fd; }
+  </style>
+</head>
+<body>
+  <form id="ibk-login-form">
+    <input id="ibk-id" placeholder="User" />
+    <input id="ibk-pw" type="password" placeholder="Pass" />
+    <button id="ibk-login-btn" type="submit">Sign In</button>
+  </form>
+  <div id="ibk-account" style="display:none;">
+    <div class="ibk-balance">₩1,000,000</div>
+    <button id="ibk-history-btn">내역</button>
+    <form id="ibk-date-form" style="display:none;">
+      <input id="ibk-date-start" type="date" />
+      <input id="ibk-date-end" type="date" />
+      <button id="ibk-search-btn" type="button">조회</button>
+    </form>
+    <div id="ibk-trans"></div>
+    <button id="ibk-logout-btn">로그아웃</button>
+  </div>
+  <script>
+    document.getElementById('ibk-login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.getElementById('ibk-login-form').style.display = 'none';
+      document.getElementById('ibk-account').style.display = 'block';
+    });
+    document.getElementById('ibk-history-btn').addEventListener('click', function() {
+      document.getElementById('ibk-date-form').style.display = 'block';
+    });
+    function generateIbkTransactions() {
+      const start = new Date('2020-01-01');
+      const today = new Date();
+      const days = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+      const count = 1000;
+      const step = Math.max(1, Math.floor(days / count));
+      let html = `
+        <table class="ibk-table">
+          <thead>
+            <tr>
+              <th>거래일자</th>
+              <th>적요</th>
+              <th>입출금액</th>
+              <th>잔액</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      let balance = 1000000;
+      for (let i = 0; i < count; i++) {
+        const date = new Date(start.getTime() + i * step * 24 * 60 * 60 * 1000);
+        const isDeposit = Math.random() > 0.5;
+        const amount = Math.floor(Math.random() * 100000) + 10000;
+        balance += isDeposit ? amount : -amount;
+        html += `
+          <tr class="ibk-transaction">
+            <td class="ibk-date">${date.toISOString().split('T')[0]}</td>
+            <td class="ibk-desc">${isDeposit ? '입금' : '출금'}</td>
+            <td class="ibk-amount">${isDeposit ? '+' : '-'}${amount.toLocaleString()}</td>
+            <td class="ibk-balance">${balance.toLocaleString()}</td>
+          </tr>
+        `;
+      }
+      html += '</tbody></table>';
+      return html;
+    }
+    document.getElementById('ibk-search-btn').addEventListener('click', function() {
+      document.getElementById('ibk-trans').innerHTML = generateIbkTransactions();
+    });
+    document.getElementById('ibk-logout-btn').addEventListener('click', function() {
+      document.getElementById('ibk-account').style.display = 'none';
+      document.getElementById('ibk-login-form').style.display = 'block';
+    });
+  </script>
+</body>
+</html> 

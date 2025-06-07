@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>신한은행 테스트</title>
+  <style>
+    .shinhan-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .shinhan-table th, .shinhan-table td { border: 1px solid #e0e0e0; padding: 6px 8px; text-align: center; }
+    .shinhan-table th { background: #f6f6f6; color: #222; }
+    .shinhan-table tr:nth-child(even) { background: #f7fafd; }
+    .shinhan-table tr:hover { background: #e3f2fd; }
+  </style>
+</head>
+<body>
+  <form id="shinhan-login-form">
+    <input id="shinhan-id" placeholder="아이디" />
+    <input id="shinhan-pw" type="password" placeholder="비밀번호" />
+    <button id="shinhan-login-btn" type="submit">로그인</button>
+  </form>
+  <div id="shinhan-account" style="display:none;">
+    <div class="shinhan-balance">₩5,000,000</div>
+    <button id="shinhan-history-btn">거래내역</button>
+    <form id="shinhan-date-form" style="display:none;">
+      <input id="shinhan-date-start" type="date" />
+      <input id="shinhan-date-end" type="date" />
+      <button id="shinhan-search-btn" type="button">조회</button>
+    </form>
+    <div id="shinhan-trans"></div>
+    <button id="shinhan-logout-btn">로그아웃</button>
+  </div>
+  <script>
+    document.getElementById('shinhan-login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.getElementById('shinhan-login-form').style.display = 'none';
+      document.getElementById('shinhan-account').style.display = 'block';
+    });
+    document.getElementById('shinhan-history-btn').addEventListener('click', function() {
+      document.getElementById('shinhan-date-form').style.display = 'block';
+    });
+    function generateShinhanTransactions() {
+      const start = new Date('2020-01-01');
+      const today = new Date();
+      const days = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+      const count = 1000;
+      const step = Math.max(1, Math.floor(days / count));
+      let html = `
+        <table class="shinhan-table">
+          <thead>
+            <tr>
+              <th>거래일</th>
+              <th>적요</th>
+              <th>입출금</th>
+              <th>잔액</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      let balance = 5000000;
+      for (let i = 0; i < count; i++) {
+        const date = new Date(start.getTime() + i * step * 24 * 60 * 60 * 1000);
+        const isDeposit = Math.random() > 0.5;
+        const amount = Math.floor(Math.random() * 100000) + 10000;
+        balance += isDeposit ? amount : -amount;
+        html += `
+          <tr class="shinhan-transaction">
+            <td class="shinhan-date">${date.toISOString().split('T')[0]}</td>
+            <td class="shinhan-desc">${isDeposit ? '입금' : '출금'}</td>
+            <td class="shinhan-amount">${isDeposit ? '+' : '-'}${amount.toLocaleString()}</td>
+            <td class="shinhan-balance">${balance.toLocaleString()}</td>
+          </tr>
+        `;
+      }
+      html += '</tbody></table>';
+      return html;
+    }
+    document.getElementById('shinhan-search-btn').addEventListener('click', function() {
+      document.getElementById('shinhan-trans').innerHTML = generateShinhanTransactions();
+    });
+    document.getElementById('shinhan-logout-btn').addEventListener('click', function() {
+      document.getElementById('shinhan-account').style.display = 'none';
+      document.getElementById('shinhan-login-form').style.display = 'block';
+    });
+  </script>
+</body>
+</html> 

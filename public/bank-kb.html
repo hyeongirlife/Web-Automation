@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>국민은행 테스트</title>
+  <style>
+    .kb-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .kb-table th, .kb-table td { border: 1px solid #e0e0e0; padding: 6px 8px; text-align: center; }
+    .kb-table th { background: #f6f6f6; color: #222; }
+    .kb-table tr:nth-child(even) { background: #fafbfc; }
+    .kb-table tr:hover { background: #e3f2fd; }
+  </style>
+</head>
+<body>
+  <form id="kb-login-form">
+    <input id="kb-username" placeholder="아이디" />
+    <input id="kb-password" type="password" placeholder="비밀번호" />
+    <button id="kb-login-btn" type="submit">로그인</button>
+  </form>
+  <div id="kb-account-section" style="display:none;">
+    <div class="kb-balance">₩2,345,678</div>
+    <button id="kb-history-tab">거래내역</button>
+    <form id="kb-date-form" style="display:none;">
+      <input id="kb-start-date" type="date" />
+      <input id="kb-end-date" type="date" />
+      <button id="kb-search-btn" type="button">조회</button>
+    </form>
+    <div id="kb-transactions"></div>
+    <button id="kb-logout-btn">로그아웃</button>
+  </div>
+  <script>
+    document.getElementById('kb-login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.getElementById('kb-login-form').style.display = 'none';
+      document.getElementById('kb-account-section').style.display = 'block';
+    });
+    document.getElementById('kb-history-tab').addEventListener('click', function() {
+      document.getElementById('kb-date-form').style.display = 'block';
+    });
+    function generateKbTransactions() {
+      const start = new Date('2020-01-01');
+      const today = new Date();
+      const days = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+      const count = 1000;
+      const step = Math.max(1, Math.floor(days / count));
+      let html = `
+        <table class="kb-table">
+          <thead>
+            <tr>
+              <th>날짜</th>
+              <th>적요</th>
+              <th>입출금</th>
+              <th>잔액</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      let balance = 2345678;
+      for (let i = 0; i < count; i++) {
+        const date = new Date(start.getTime() + i * step * 24 * 60 * 60 * 1000);
+        const isDeposit = Math.random() > 0.5;
+        const amount = Math.floor(Math.random() * 100000) + 10000;
+        balance += isDeposit ? amount : -amount;
+        html += `
+          <tr class="kb-transaction">
+            <td class="kb-date">${date.toISOString().split('T')[0]}</td>
+            <td class="kb-desc">${isDeposit ? '입금' : '출금'}</td>
+            <td class="kb-amount">${isDeposit ? '+' : '-'}${amount.toLocaleString()}</td>
+            <td class="kb-balance">${balance.toLocaleString()}</td>
+          </tr>
+        `;
+      }
+      html += '</tbody></table>';
+      return html;
+    }
+    document.getElementById('kb-search-btn').addEventListener('click', function() {
+      document.getElementById('kb-transactions').innerHTML = generateKbTransactions();
+    });
+    document.getElementById('kb-logout-btn').addEventListener('click', function() {
+      document.getElementById('kb-account-section').style.display = 'none';
+      document.getElementById('kb-login-form').style.display = 'block';
+    });
+  </script>
+</body>
+</html> 
