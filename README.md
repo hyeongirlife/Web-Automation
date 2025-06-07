@@ -173,6 +173,34 @@ export class ScrapingMonitor {
 }
 ```
 
+### 5. DI 토큰(BANK_STRATEGY_MAP) 주입과 전략 패턴 적용
+- 서비스 코드에서 은행별 스크래핑 전략을 DI 토큰(`BANK_STRATEGY_MAP`)으로 주입받아 사용했다.
+- DI 토큰을 사용하면 서비스 코드와 전략 구현/선택이 완전히 분리되어, 유지보수성과 확장성이 크게 향상된다.
+- 실서비스(AppModule)에서는 실제 전략 인스턴스를, 테스트 환경에서는 Mock 전략 인스턴스를 DI로 주입했다.
+- 예시:
+  ```typescript
+  // AppModule (실서비스)
+  providers: [
+    BankScraperService,
+    {
+      provide: 'BANK_STRATEGY_MAP',
+      useValue: {
+        kb: new KbBankStrategy(),
+        hana: new HanaBankStrategy(),
+        // ...
+      }
+    },
+  ]
+  // 테스트 모듈
+  providers: [
+    BankScraperService,
+    { provide: 'BANK_STRATEGY_MAP', useValue: mockStrategies },
+    // ...
+  ]
+  ```
+- DI 토큰을 활용하면 서비스 코드는 변경하지 않고, 환경에 따라 실제 전략/Mock 전략을 자유롭게 교체할 수 있다.
+- 새로운 은행이 추가될 때도 전략만 추가하고 DI 맵에 등록하면 되므로, 확장성이 매우 뛰어나다.
+
 ## 기술 스택
 
 - **프로그래밍 언어**: TypeScript
