@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Toss CAPTCHA Test</title>
+  <style>
+    body {
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      background: #f9fafb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .captcha-container {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 32px 40px;
+      min-width: 320px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #captcha-img {
+      width: 120px;
+      height: 40px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #e5e8eb;
+      background: #f2f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+      color: #333d4b;
+      letter-spacing: 6px;
+      font-weight: bold;
+      user-select: none;
+    }
+    #captcha-input {
+      width: 120px;
+      padding: 8px 12px;
+      border: 1.5px solid #e5e8eb;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 12px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    #captcha-input:focus {
+      border-color: #3182f6;
+    }
+    #submit-captcha {
+      background: #3182f6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 24px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: background 0.2s;
+    }
+    #submit-captcha:hover {
+      background: #2563eb;
+    }
+    #captcha-error {
+      color: #ff3b30;
+      font-size: 14px;
+      margin-top: 4px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="captcha-container">
+    <form id="captcha-form" autocomplete="off">
+      <div id="captcha-img">ABCD</div>
+      <input id="captcha-input" placeholder="문자를 입력하세요" autocomplete="off" />
+      <button id="submit-captcha" type="submit">확인</button>
+      <div id="captcha-error">문자가 일치하지 않습니다.</div>
+    </form>
+  </div>
+  <script>
+    document.getElementById('captcha-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const value = document.getElementById('captcha-input').value;
+      if (value === 'MOCK_SOLUTION') {
+        document.getElementById('captcha-error').style.display = 'none';
+        alert('CAPTCHA solved!');
+      } else {
+        document.getElementById('captcha-error').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html> 
