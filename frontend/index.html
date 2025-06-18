@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance App - My Assets</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-text">Finance App</span>
+            </div>
+            <nav class="nav">
+                <a href="#" class="active">My Assets</a>
+                <a href="#">Transfer</a>
+                <a href="#">Pay</a>
+            </nav>
+            <div class="header-right">
+                <button class="notification-btn"></button>
+                <div class="profile-img"></div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <h1 class="page-title">My Assets</h1>
+            <p class="page-subtitle">View and manage your assets</p>
+
+            <!-- Asset Categories -->
+            <nav class="asset-nav">
+                <a href="#" class="active">Loan</a>
+                <a href="#">Securities</a>
+                <a href="#">Savings</a>
+                <a href="#">All</a>
+            </nav>
+
+            <!-- Bank Accounts Section -->
+            <section class="accounts-section">
+                <h2>Bank Accounts</h2>
+                
+                <!-- Kookmin Bank Account -->
+                <div class="account-card">
+                    <div class="account-info">
+                        <span class="account-type">Checking Account</span>
+                        <h3>Primary Checking (Kookmin Bank)</h3>
+                        <span class="balance">Available balance: $2,345.67</span>
+                    </div>
+                    <div class="bank-logo kookmin"></div>
+                </div>
+
+                <!-- Hana Bank Account -->
+                <div class="account-card">
+                    <div class="account-info">
+                        <span class="account-type">Savings Account</span>
+                        <h3>High-Yield Savings (Hana Bank)</h3>
+                        <span class="balance">Balance: $10,500.00</span>
+                    </div>
+                    <div class="bank-logo hana"></div>
+                </div>
+
+                <!-- Woori Bank Account -->
+                <div class="account-card">
+                    <div class="account-info">
+                        <span class="account-type">Checking Account</span>
+                        <h3>Main Checking (Woori Bank)</h3>
+                        <span class="balance">Available balance: $1,875.34</span>
+                    </div>
+                    <div class="bank-logo woori"></div>
+                </div>
+
+                <!-- Shinhan Bank Account -->
+                <div class="account-card">
+                    <div class="account-info">
+                        <span class="account-type">Savings Account</span>
+                        <h3>Savings Plus (Shinhan Bank)</h3>
+                        <span class="balance">Balance: $8,765.43</span>
+                    </div>
+                    <div class="bank-logo shinhan"></div>
+                </div>
+
+                <!-- IBK Account -->
+                <div class="account-card">
+                    <div class="account-info">
+                        <span class="account-type">Checking Account</span>
+                        <h3>Business Checking (IBK)</h3>
+                        <span class="balance">Available balance: $3,456.78</span>
+                    </div>
+                    <div class="bank-logo ibk"></div>
+                </div>
+            </section>
+
+            <!-- Other Assets Section -->
+            <section class="other-assets">
+                <h2>Other Assets</h2>
+
+                <!-- Investment Portfolio -->
+                <div class="asset-card portfolio">
+                    <div class="asset-info">
+                        <span class="asset-type">Investment Account</span>
+                        <h3>Growth Portfolio</h3>
+                        <span class="value">Current value: $15,789.23 | +12.5% YTD</span>
+                    </div>
+                    <div class="graph-icon"></div>
+                </div>
+
+                <!-- Credit Card -->
+                <div class="asset-card credit">
+                    <div class="asset-info">
+                        <span class="asset-type">Credit Card</span>
+                        <h3>Rewards Card</h3>
+                        <span class="credit-limit">Available credit: $5,000.00</span>
+                    </div>
+                    <div class="card-icon"></div>
+                </div>
+
+                <!-- Loan -->
+                <div class="asset-card loan">
+                    <div class="asset-info">
+                        <span class="asset-type">Loan</span>
+                        <h3>Personal Loan</h3>
+                        <span class="loan-balance">Remaining balance: $7,500.00</span>
+                    </div>
+                    <div class="loan-icon"></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="#" class="active">
+                <span class="icon home"></span>
+                <span>Home</span>
+            </a>
+            <a href="#">
+                <span class="icon rewards"></span>
+                <span>Rewards</span>
+            </a>
+            <a href="#">
+                <span class="icon shop"></span>
+                <span>Shop</span>
+            </a>
+            <a href="#">
+                <span class="icon invest"></span>
+                <span>Invest</span>
+            </a>
+        </nav>
+    </div>
+</body>
+</html>

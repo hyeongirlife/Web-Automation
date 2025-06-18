@@ -1,0 +1,257 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #0A0A0A;
+    color: #FFFFFF;
+    line-height: 1.5;
+}
+
+.app {
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 70px;
+}
+
+/* Header Styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #0A0A0A;
+}
+
+.logo-text {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.nav {
+    display: flex;
+    gap: 20px;
+}
+
+.nav a {
+    color: #888;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.nav a.active {
+    color: #FFFFFF;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.notification-btn {
+    width: 24px;
+    height: 24px;
+    background: url('bell-icon.svg') no-repeat center;
+    border: none;
+    cursor: pointer;
+}
+
+.profile-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #333;
+}
+
+/* Main Content Styles */
+.main {
+    padding: 20px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.page-subtitle {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+/* Asset Navigation */
+.asset-nav {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 12px;
+}
+
+.asset-nav a {
+    color: #888;
+    text-decoration: none;
+    font-size: 14px;
+    padding-bottom: 12px;
+    position: relative;
+}
+
+.asset-nav a.active {
+    color: #FFFFFF;
+}
+
+.asset-nav a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #FFFFFF;
+}
+
+/* Account Cards */
+.accounts-section h2,
+.other-assets h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: #CCCCCC;
+}
+
+.account-card,
+.asset-card {
+    background-color: #1A1A1A;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.account-info,
+.asset-info {
+    flex: 1;
+}
+
+.account-type,
+.asset-type {
+    font-size: 12px;
+    color: #888;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.account-card h3,
+.asset-card h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.balance,
+.value,
+.credit-limit,
+.loan-balance {
+    font-size: 14px;
+    color: #888;
+}
+
+/* Bank Logos */
+.bank-logo {
+    width: 80px;
+    height: 50px;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bank-logo.kookmin { background-color: #FFFFFF; }
+.bank-logo.hana { background-color: #FFFFFF; }
+.bank-logo.woori { background-color: #00857B; }
+.bank-logo.shinhan { background-color: #012D62; }
+.bank-logo.ibk { background-color: #1E4B3D; }
+
+/* Other Assets Icons */
+.graph-icon,
+.card-icon,
+.loan-icon {
+    width: 80px;
+    height: 50px;
+    border-radius: 8px;
+    background-color: #2A2A2A;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 430px;
+    margin: 0 auto;
+    background-color: #1A1A1A;
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0;
+    border-top: 1px solid #222;
+}
+
+.bottom-nav a {
+    text-decoration: none;
+    color: #888;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.bottom-nav a.active {
+    color: #FFFFFF;
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    background-color: currentColor;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+}
+
+.icon.home { mask-image: url('home-icon.svg'); -webkit-mask-image: url('home-icon.svg'); }
+.icon.rewards { mask-image: url('rewards-icon.svg'); -webkit-mask-image: url('rewards-icon.svg'); }
+.icon.shop { mask-image: url('shop-icon.svg'); -webkit-mask-image: url('shop-icon.svg'); }
+.icon.invest { mask-image: url('invest-icon.svg'); -webkit-mask-image: url('invest-icon.svg'); }
+
+/* Responsive Design */
+@media (max-width: 430px) {
+    .app {
+        width: 100%;
+    }
+}
+
+/* Dark Mode Enhancement */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #0A0A0A;
+    }
+    
+    .account-card,
+    .asset-card {
+        background-color: #1A1A1A;
+    }
+}

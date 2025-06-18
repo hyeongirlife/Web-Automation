@@ -11,7 +11,7 @@ import * as puppeteer from 'puppeteer';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
 
-describe('BankScraperService (통합 Mock 전략)', () => {
+describe('BankScraperService 통합 테스트', () => {
   let service: BankScraperService;
   let browserFactory: BrowserFactory;
   let configService: ConfigService;
@@ -25,9 +25,13 @@ describe('BankScraperService (통합 Mock 전략)', () => {
     shinhan: path.resolve('public/bank-shinhan.html'),
   };
 
-  const credentials: LoginInfo = { username: 'testuser', password: 'testpass' };
+  const TEST_CREDENTIALS: LoginInfo = {
+    username: 'testuser',
+    password: 'testpass',
+  };
 
   beforeAll(async () => {
+    // Given: 필요한 서비스와 모의 전략들을 설정
     configService = new ConfigService();
     logger = new LoggerService(configService);
 
@@ -44,6 +48,7 @@ describe('BankScraperService (통합 Mock 전략)', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BankScraperService,
+        ConfigService,
         { provide: 'BANK_STRATEGY_MAP', useValue: mockStrategies },
         { provide: BrowserFactory, useValue: browserFactory },
         { provide: LoggerService, useValue: logger },
@@ -58,30 +63,55 @@ describe('BankScraperService (통합 Mock 전략)', () => {
   });
 
   const runBankTest = (bankCode: keyof typeof BANK_HTML) => {
-    it(`${bankCode}은행 잔액/거래내역 통합 테스트`, async () => {
-      const browser = await puppeteer.launch({
-        headless: true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--allow-file-access-from-files',
-        ],
+    describe(`${bankCode.toUpperCase()} 은행 스크래핑 테스트`, () => {
+      let browser: puppeteer.Browser;
+      let page: puppeteer.Page;
+
+      beforeEach(async () => {
+        // Given: 브라우저와 페이지를 설정
+        browser = await puppeteer.launch({
+          headless: true,
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--allow-file-access-from-files',
+          ],
+        });
+        page = await browser.newPage();
+        await page.goto('file://' + BANK_HTML[bankCode]);
       });
-      const page = await browser.newPage();
-      await page.goto('file://' + BANK_HTML[bankCode]);
-      await service['strategies'][bankCode].login(page, credentials);
-      const balance = await service['strategies'][bankCode].getBalance(page);
-      expect(typeof balance).toBe('number');
-      const startDate = new Date('2020-01-01');
-      const endDate = new Date();
-      const transactions = await service['strategies'][
-        bankCode
-      ].getTransactionHistory(page, startDate, endDate);
-      expect(transactions.length).toBeGreaterThan(0);
-      await browser.close();
-    }, 20000);
+
+      afterEach(async () => {
+        await browser.close();
+      });
+
+      it('로그인, 잔액조회, 거래내역 조회가 성공적으로 수행되어야 함', async () => {
+        // Given: 테스트 날짜 범위 설정
+        const startDate = new Date('2020-01-01');
+        const endDate = new Date();
+
+        // When: 로그인 수행
+        await service['strategies'][bankCode].login(page, TEST_CREDENTIALS);
+
+        // Then: 잔액 조회가 성공적으로 수행됨
+        const balance = await service['strategies'][bankCode].getBalance(page);
+        expect(typeof balance).toBe('number');
+        expect(balance).not.toBeNaN();
+
+        // When: 거래내역 조회 수행
+        const transactions = await service['strategies'][
+          bankCode
+        ].getTransactionHistory(page, startDate, endDate);
+
+        // Then: 거래내역이 성공적으로 조회됨
+        expect(transactions).toBeDefined();
+        expect(Array.isArray(transactions)).toBe(true);
+        expect(transactions.length).toBeGreaterThan(0);
+      }, 20000);
+    });
   };
 
+  // 각 은행별 테스트 실행
   runBankTest('kb');
   runBankTest('hana');
   runBankTest('ibk');

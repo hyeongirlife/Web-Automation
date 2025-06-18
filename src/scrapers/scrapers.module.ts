@@ -9,6 +9,7 @@ import { HanaBankStrategy } from './bank/strategies/hana-bank.strategy';
 import { IbkBankStrategy } from './bank/strategies/ibk-bank.strategy';
 import { WooriBankStrategy } from './bank/strategies/woori-bank.strategy';
 import { ShinhanBankStrategy } from './bank/strategies/shinhan-bank.strategy';
+import { BankScraperController } from './bank/bank-scraper.controller';
 
 const strategies = {
   kb: new KbBankStrategy(),
@@ -26,6 +27,7 @@ const strategies = {
     UtilsModule,
   ],
   providers: [
+    BankScraperController,
     BankScraperService,
     CaptchaService,
     ScrapingStrategyFactory,

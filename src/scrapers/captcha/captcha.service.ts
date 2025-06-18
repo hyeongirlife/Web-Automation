@@ -12,7 +12,7 @@ export class CaptchaService {
 
   async solveCaptcha(page: Page, captchaSelector: string): Promise<boolean> {
     try {
-      this.logger.log('Attempting to solve CAPTCHA');
+      this.logger.log('CAPTCHA를 시도합니다.');
 
       // CAPTCHA 요소가 있는지 확인
       const hasCaptcha = (await page.$(captchaSelector)) !== null;

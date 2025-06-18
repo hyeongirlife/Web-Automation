@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
-import { Browser } from 'puppeteer';
+import { Browser, Page } from 'puppeteer';
 import { ConfigService } from '@nestjs/config';
 import { LoggerService } from './logger.service';
 
@@ -35,7 +35,8 @@ export class BrowserFactory implements OnModuleInit, OnModuleDestroy {
       });
       this.logger.log('Browser initialized successfully');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error('Failed to initialize browser', errorMessage);
       throw error;
     }
@@ -59,5 +60,41 @@ export class BrowserFactory implements OnModuleInit, OnModuleDestroy {
   async newPage() {
     const browser = await this.getBrowser();
     return browser.newPage();
+  }
+
+  async createPage(): Promise<Page> {
+    try {
+      const browser = await this.getBrowser();
+      const page = await browser.newPage();
+
+      // Set default timeout
+      page.setDefaultTimeout(30000);
+
+      // Enable request interception
+      await page.setRequestInterception(true);
+
+      // Handle requests
+      page.on('request', (request) => {
+        if (request.resourceType() === 'image') {
+          request.abort();
+        } else {
+          request.continue();
+        }
+      });
+
+      return page;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Failed to create page: ${errorMessage}`);
+      throw new Error(`Failed to create browser page: ${errorMessage}`);
+    }
+  }
+
+  async cleanup(): Promise<void> {
+    if (this.browser) {
+      await this.browser.close();
+      this.browser = null;
+    }
   }
 }
